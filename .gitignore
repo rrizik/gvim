@@ -1,0 +1,10 @@
+
+/*
+
+!.gitignore
+!_vimrc
+!vimfiles
+vimfiles/*
+!vimfiles/colors
+!vimfiles/bundle
+!vimfiles/syntax
