@@ -59,8 +59,11 @@ hi Type                 ctermfg=173      cterm=none      guifg=#ffaf5f   gui=non
 hi Special              ctermfg=180      cterm=none      guifg=#90a461   gui=none
 hi String               ctermfg=173      cterm=none      guifg=#90a461   gui=none
 hi Comment              ctermfg=246      cterm=none      guifg=#949494   gui=none
+
 hi Red                  ctermfg=124      cterm=none		 guifg=#af0000	 guibg=#1c1c1c gui=underline,bold
+hi SoftRed              ctermfg=124      cterm=none		 guifg=#bd3131	 guibg=#1c1c1c gui=underline,bold
 hi Yellow               ctermfg=184      cterm=none		 guifg=#d7d700	 guibg=#1c1c1c gui=underline,bold
+hi SoftYellow           ctermfg=184      cterm=none		 guifg=#c2bd3a	 guibg=#1c1c1c gui=underline,bold
 hi Green                ctermfg=107      cterm=none		 guifg=#87af5f	 guibg=#1c1c1c gui=underline,bold
 
 

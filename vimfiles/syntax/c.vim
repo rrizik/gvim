@@ -27,10 +27,10 @@ syn keyword	cLabel		case default
 syn keyword	cConditional	if else switch
 syn keyword	cRepeat		while for do
 
-syn keyword cTodo		contained TODO FIXME XXX WRONG
-syn keyword cRed		contained TODO FIXME XXX WRONG
-syn keyword cYellow		contained INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED
-syn keyword cGreen		contained NOTE IMPORTANT
+syn keyword cTodo		contained TODO FIXME XXX WRONG todo fixme xxx wrong
+syn keyword cRed		contained TODO FIXME XXX WRONG todo fixme xxx wrong
+syn keyword cYellow		contained CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED NOCHECKIN cleanup incomplete study question future consider unclear untested nocheckin
+syn keyword cGreen		contained NOTE IMPORTANT note important
 
 " It's easy to accidentally add a space after a backslash that was intended
 " for line continuation.  Some compilers allow it, which makes it
@@ -499,10 +499,10 @@ hi def link cComment		Comment
 hi def link cSpecial		SpecialChar
 
 hi def link cTodo		Todo
-hi def link cRed		Red
-hi def link cYellow		Yellow
+hi def link cRed		SoftRed
+hi def link cYellow		SoftYellow
 hi def link cGreen		Green
-syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 RGBA wchar global local_static local function func def m2 m3 m4 Arena ScratchArena String8 String16 String32
+syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 RGBA wchar global local_static local function func def m2 m3 m4 Arena ScratchArena String8 String16 String32 
 
 hi def link cBadContinuation	Error
 hi def link cCppOutSkip		cCppOutIf2

@@ -6,5 +6,5 @@
 !vimfiles
 vimfiles/*
 !vimfiles/colors
-!vimfiles/bundle
+vimfiles/bundle
 !vimfiles/syntax

@@ -1,13 +1,7 @@
 " --- WISH LIST ---
-"  - loading the vim session, needs to not happen when I :source ~/_vimrc
 "  - Jump to definition
-"  - RED and YELLOW tag colors hurt my eyes, find something better
-"  - quickfix horizonal split is kind of annoying. Need to think of how to improve it.
-"       1) horizontal split doesnt push the top window's text upwards, jolting
-"           ths screen aroundup. Instead it needs to push the bottom of the text
-"           upwards.
-"       2) somehow get quickfix to, open as small as possible and show
-"          doneness. If fails, then change size or reopen to larger size
+"  - quickfix should pipe output to status bar, as long as it succeeds. If it fails, it can open a window
+"----------------------------------------------------------------------------------------------------
 
 "set nocompatible              "be iMproved, required
 "filetype off                  "required <<========== We can turn it on later
@@ -20,17 +14,14 @@ set rtp+=$HOME/vimfiles/colors
 " --- plugin install ---
 call vundle#begin()
 let g:vundle#bundle_dir='$HOME/vimfiles/bundle/'
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'scrooloose/nerdtree'
-Plugin 'skywind3000/asyncrun.vim'
+Plugin 'VundleVim/Vundle.vim'     " vim plugin plugin
+Plugin 'ctrlpvim/ctrlp.vim'       " file finder
+Plugin 'scrooloose/nerdtree'      " file viewer with tab
+Plugin 'skywind3000/asyncrun.vim' " run terminal commands from vim
 Plugin 'haya14busa/incsearch.vim' " makes / ? g/ searching better by highlighting all results
-Plugin 'webastien/vim-ctags'
-"Plugin 'vim-scripts/QuickFixCurrentNumber'
-"Plugin 'yssl/QFEnter' " quickfix improvements
-"Plugin '907th/vim-auto-save'
-"Plugin 'bimlas/vim-high'
-"Plugin 'kkoenig/wimproved.vim' " this is only here to remove gvims garbage bottom and right bars because gvim couldnt use its brain to set the size of the window to the windows window size. could change a register color (maybe a background color) of some sorts but im not sure which it might be or where to find it
+Plugin 'webastien/vim-ctags'      " jump to definition (not working)
+Plugin 'junegunn/fzf'             " just used for ripgrep. Idk if I want this, seems annoying
+Plugin 'junegunn/fzf.vim'         " just used for ripgrep. Idk if I want this, seems annoying
 call vundle#end()            " required
 filetype plugin indent on    " required
 
@@ -69,7 +60,7 @@ set splitright
 set splitbelow
 set ruler
 set nopaste
-set number     "enables line numbers
+set nonumber     "enables line numbers
 set mouse=a    "enable mouse functionality
 set nohlsearch "disable highlighting after search complete
 set wrap linebreak nolist
@@ -105,13 +96,6 @@ syntax on      "sytax highlighting on
 " --- Remove trailing whitespace for these file types
 autocmd FileType c,cpp,python autocmd BufWritePre <buffer> %s/\s\+$//e
 
-" --- ASYNC SETTINGS ---
-let g:asyncrun_open = 6
-let g:asyncrun_stdin = 1
-let g:asyncrun_save = 1
-let g:asyncrun_auto = "make"
-let g:asyncrun_status = ""
-
 " --- NERDTREE SETTINGS ---
 :nnoremap <tab> :NERDTreeToggle<CR>
 let NERDTreeShowHidden=1
@@ -127,19 +111,6 @@ map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
 
-" --- QUICKFIX SETTINGS ---
-set errorformat=\ %#%f(%l\\\,%c):\ %m " quick fix error format for clang/msvc (hopefully)
-set makeprg=build.bat
-fu! NextQuickFixError()
-    try
-        :cnext
-    catch
-        :cfirst
-        :cnext
-    endtry
-endfunction
-nnoremap <silent> <C-N>  <ESC>:call NextQuickFixError()<RETURN><ESC>
-
 " --- COMMANDS ---
 :command Hex %!xxd
 :command Hexb %!xxd -r
@@ -148,17 +119,51 @@ nnoremap <silent> <C-N>  <ESC>:call NextQuickFixError()<RETURN><ESC>
 nnoremap j gj
 nnoremap k gk
 
-nnoremap <silent> <C-K>  <ESC>:wa<RETURN><ESC>:AsyncRun -mode=async ..\misc\build.bat<RETURN>
-inoremap <silent> <C-K>  <ESC>:wa<RETURN><ESC>:AsyncRun -mode=async ..\misc\build.bat<RETURN>
+" --- ASYNC SETTINGS ---
+let g:asyncrun_open = 4
+let g:asyncrun_stdin = 1
+let g:asyncrun_save = 1
+let g:asyncrun_auto = "make"
+let g:asyncrun_status = ""
+
+" --- FZF RG SETTINGS ---
+
+" --- QUICKFIX SETTINGS ---
+set switchbuf=usetab,newtab " quick fix jump to existing tab or open new tab for file
+set errorformat=\ %#%f(%l\\\,%c):\ %m " quick fix error format for clang/msvc (hopefully)
+set makeprg=..\misc\build.bat " set default make for quickfix to be my build.bat
+function! NextQuickFixError()
+    let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
+    let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
+    if error_count != 0 || warning_count != 0
+        try
+            :cnext
+        catch
+            :cfirst
+            :cnext
+        endtry
+    else
+        :ccl
+    endif
+endfunction
+
+" --- MY MAPPINGS ---
+nnoremap <silent> <C-K>  <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
+inoremap <silent> <C-K>  <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
+nnoremap <silent> <C-N>  <ESC>:call NextQuickFixError()<RETURN><ESC>
+nnoremap <silent> <C-S>  <ESC><ESC>:Rg<RETURN>
+inoremap <silent> <C-S>  <ESC><ESC>:Rg<RETURN>
 nnoremap <silent> <C-J>  <ESC><ESC>:wa<RETURN>
 inoremap <silent> <C-J>  <ESC><ESC>:wa<RETURN>
 
 nnoremap <silent> <C-w>v <ESC>:vsplit<RETURN>
 nnoremap <silent> <C-w>b <ESC>:split<RETURN>
 nnoremap <silent> <C-h>  <ESC>:set paste!<RETURN>
-nnoremap <silent> <F2>   <ESC>:source $HOME/_vimrc<RETURN>
+nnoremap <silent> <F2>   <ESC>:w<RETURN><ESC>:source $HOME/_vimrc<RETURN>
 nnoremap <silent> <F3>   <ESC>:tabedit $HOME/_vimrc<RETURN>
 nnoremap <silent> <F4>   <ESC>:tabedit $HOME/vimfiles/colors/custom.vim <RETURN>
+nnoremap <silent> <F5>   <Nop>
+nnoremap <silent> <F6>   <ESC>:tabedit $HOME/vimfiles/syntax/c.vim <RETURN>
 nnoremap <silent> <F8>   <ESC>:w<RETURN><ESC>:call DisplayTags()<RETURN>
 nnoremap <silent> <F9>   <ESC>:w<RETURN><ESC>:call DisplayGivenTag()<RETURN>
 nnoremap <silent> <F10>  <ESC>:w<RETURN><ESC>:call RebuildTags()<RETURN>
@@ -171,10 +176,12 @@ command! -nargs=1 Touch AsyncRun -mode=term -pos=hide  -focus=0 type nul > <args
 command! -nargs=1 Rm    AsyncRun -mode=term -pos=hide  -focus=0 del <args>
 command! -nargs=1 Mv    AsyncRun -mode=term -pos=hide  -focus=0 move <args>
 command! -nargs=1 Build AsyncRun -mode=term -pos=hide  -focus=0 build.bat<RETURN><CR>
-command! -nargs=1 Run   AsyncRun -mode=term -pos=hide  -focus=0 run.bat<RETURN><CR>
+command -nargs=* Run AsyncRun <args>
 
 " --- LOAD VIM SESSION ---
-let timer = timer_start(1, 'LoadSession', {})
-function! LoadSession(timer)
+function! LoadSession()
     silent! :source ../session.vim
 endfunction
+if !v:vim_did_enter " only on vim enter do I load the session
+ call LoadSession()
+endif
