@@ -1,6 +1,7 @@
 " --- WISH LIST ---
 "  - Jump to definition
 "  - quickfix should pipe output to status bar, as long as it succeeds. If it fails, it can open a window
+"  - ctlr + shift + n = previous quickfix error
 "----------------------------------------------------------------------------------------------------
 
 "set nocompatible              "be iMproved, required
@@ -120,7 +121,7 @@ nnoremap j gj
 nnoremap k gk
 
 " --- ASYNC SETTINGS ---
-let g:asyncrun_open = 4
+let g:asyncrun_open = 6
 let g:asyncrun_stdin = 1
 let g:asyncrun_save = 1
 let g:asyncrun_auto = "make"
