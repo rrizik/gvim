@@ -119,6 +119,17 @@ map g/ <Plug>(incsearch-stay)
 nnoremap j gj
 nnoremap k gk
 
+" --- OPEN/JUMPTO FILE ----
+function OpenFile(filename) 
+    try
+        execute 'tab sbuffer ' . a:filename
+        ":tab sbuffer ~/_vimrc
+    catch /E94:/
+        execute 'tabe ' . a:filename
+        ":tabe ~/_vimrc
+    endtry
+endfunction
+
 " --- ASYNC SETTINGS ---
 let g:asyncrun_open = 0
 let g:asyncrun_stdin = 1
@@ -166,19 +177,8 @@ function! PrevQuickFixError() abort
     endif
 endfunction
 
-" --- OPEN/JUMPTO FILE ----
-function OpenFile(filename) 
-    try
-        execute 'tab sbuffer ' . a:filename
-        ":tab sbuffer ~/_vimrc
-    catch /E94:/
-        execute 'tabe ' . a:filename
-        ":tabe ~/_vimrc
-    endtry
-endfunction
-
 " --- STATUS BAR LINE
-function CheckForQuickFixErrors()
+function OponQuickFixIfErrors()
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
@@ -190,18 +190,17 @@ function ExecMake()
     set laststatus=2
     cclose
     let g:asyncrun_open = 0
-    AsyncRun -program=make
-    autocmd User AsyncRunStop call CheckForQuickFixErrors()
+    AsyncRun -program=make " Async runs my build.bat asynchronously, doesn't lock me out
+    autocmd User AsyncRunStop call OponQuickFixIfErrors() " opens quickfix window if there are errors after Async completes
 endfunction
-set statusline=%{getqflist()[-1]['text']}
+set statusline=%{getqflist()[-1]['text']} " outputs getqflist last item text to statusline
 
 " --- MY MAPPINGS ---
 nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
 inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
-"nnoremap  <C-K>   <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
-"inoremap  <C-K>   <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
 nnoremap  <C-N>   <ESC>:call NextQuickFixError()<RETURN>
 nnoremap  <C-B>   <ESC>:call PrevQuickFixError()<RETURN>
+
 noremap   <C-S>   <ESC><ESC>:Rg<RETURN>
 nnoremap  <C-J>   <ESC><ESC>:wa<RETURN>
 inoremap  <C-J>   <ESC><ESC>:wa<RETURN>
@@ -230,7 +229,7 @@ command! -nargs=1 Build AsyncRun -mode=term -pos=hide  -focus=0 build.bat<RETURN
 command -nargs=* Run AsyncRun <args>
 
 " --- LOAD VIM SESSION ---
-set sessionoptions=tabpages,curdir,winpos,winsize,unix
+set sessionoptions=tabpages,curdir,winpos,winsize,unix " only save tab and window info
 function LoadSession() abort
     silent! :source ../session.vim
 endfunction
