@@ -1,6 +1,5 @@
 " --- WISH LIST ---
 "  - Jump to definition
-"  - quickfix should pipe output to status bar, as long as it succeeds. If it fails, it can open a window
 "----------------------------------------------------------------------------------------------------
 
 "set nocompatible              "be iMproved, required
@@ -121,7 +120,7 @@ nnoremap j gj
 nnoremap k gk
 
 " --- ASYNC SETTINGS ---
-let g:asyncrun_open = 5
+let g:asyncrun_open = 0
 let g:asyncrun_stdin = 1
 let g:asyncrun_save = 1
 let g:asyncrun_auto = "make"
@@ -137,6 +136,8 @@ function! NextQuickFixError() abort
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
+        set laststatus=0
+        copen
         try
             :cnext
         catch
@@ -152,6 +153,8 @@ function! PrevQuickFixError() abort
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
+        set laststatus=0
+        copen
         try
             :cprev
         catch
@@ -174,9 +177,29 @@ function OpenFile(filename)
     endtry
 endfunction
 
+" --- STATUS BAR LINE
+function CheckForQuickFixErrors()
+    let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
+    let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
+    if error_count != 0 || warning_count != 0
+        copen
+    endif
+endfunction
+
+function ExecMake()
+    set laststatus=2
+    cclose
+    let g:asyncrun_open = 0
+    AsyncRun -program=make
+    autocmd User AsyncRunStop call CheckForQuickFixErrors()
+endfunction
+set statusline=%{getqflist()[-1]['text']}
+
 " --- MY MAPPINGS ---
-nnoremap  <C-K>   <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
-inoremap  <C-K>   <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
+nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
+inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
+"nnoremap  <C-K>   <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
+"inoremap  <C-K>   <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
 nnoremap  <C-N>   <ESC>:call NextQuickFixError()<RETURN>
 nnoremap  <C-B>   <ESC>:call PrevQuickFixError()<RETURN>
 noremap   <C-S>   <ESC><ESC>:Rg<RETURN>
