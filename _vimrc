@@ -1,7 +1,6 @@
 " --- WISH LIST ---
 "  - Jump to definition
 "  - quickfix should pipe output to status bar, as long as it succeeds. If it fails, it can open a window
-"  - ctlr + shift + n = previous quickfix error
 "----------------------------------------------------------------------------------------------------
 
 "set nocompatible              "be iMproved, required
@@ -52,6 +51,7 @@ set expandtab
 set softtabstop=4 " Make the spaces feel like real tabs
 set backspace=indent,eol,start
 set nocompatible
+set autoread " auto read changes to files
 
 " --- GENERAL SETTINGS
 set guifont=consolas:h11
@@ -121,7 +121,7 @@ nnoremap j gj
 nnoremap k gk
 
 " --- ASYNC SETTINGS ---
-let g:asyncrun_open = 6
+let g:asyncrun_open = 5
 let g:asyncrun_stdin = 1
 let g:asyncrun_save = 1
 let g:asyncrun_auto = "make"
@@ -133,7 +133,7 @@ let g:asyncrun_status = ""
 set switchbuf=usetab,newtab " quick fix jump to existing tab or open new tab for file
 set errorformat=\ %#%f(%l\\\,%c):\ %m " quick fix error format for clang/msvc (hopefully)
 set makeprg=..\misc\build.bat " set default make for quickfix to be my build.bat
-function! NextQuickFixError()
+function! NextQuickFixError() abort
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
@@ -148,28 +148,55 @@ function! NextQuickFixError()
     endif
 endfunction
 
-" --- MY MAPPINGS ---
-nnoremap <silent> <C-K>  <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
-inoremap <silent> <C-K>  <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
-nnoremap <silent> <C-N>  <ESC>:call NextQuickFixError()<RETURN><ESC>
-nnoremap <silent> <C-S>  <ESC><ESC>:Rg<RETURN>
-inoremap <silent> <C-S>  <ESC><ESC>:Rg<RETURN>
-nnoremap <silent> <C-J>  <ESC><ESC>:wa<RETURN>
-inoremap <silent> <C-J>  <ESC><ESC>:wa<RETURN>
+function! PrevQuickFixError() abort
+    let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
+    let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
+    if error_count != 0 || warning_count != 0
+        try
+            :cprev
+        catch
+            :clast
+            :cprev
+        endtry
+    else
+        :ccl
+    endif
+endfunction
 
-nnoremap <silent> <C-w>v <ESC>:vsplit<RETURN>
-nnoremap <silent> <C-w>b <ESC>:split<RETURN>
-nnoremap <silent> <C-h>  <ESC>:set paste!<RETURN>
-nnoremap <silent> <F2>   <ESC>:w<RETURN><ESC>:source $HOME/_vimrc<RETURN>
-nnoremap <silent> <F3>   <ESC>:tabedit $HOME/_vimrc<RETURN>
-nnoremap <silent> <F4>   <ESC>:tabedit $HOME/vimfiles/colors/custom.vim <RETURN>
-nnoremap <silent> <F5>   <Nop>
-nnoremap <silent> <F6>   <ESC>:tabedit $HOME/vimfiles/syntax/c.vim <RETURN>
-nnoremap <silent> <F8>   <ESC>:w<RETURN><ESC>:call DisplayTags()<RETURN>
-nnoremap <silent> <F9>   <ESC>:w<RETURN><ESC>:call DisplayGivenTag()<RETURN>
-nnoremap <silent> <F10>  <ESC>:w<RETURN><ESC>:call RebuildTags()<RETURN>
-"nnoremap <silent> <F5>   <ESC>:update<RETURN><ESC>:cw<RETURN><ESC>:cn<RETURN>
-"nnoremap <silent> <F5>   <ESC>:wa<RETURN><ESC>:AsyncRun -mode=term -pos=external -focus=0 -silent ..\misc\build.bat<RETURN><CR>
+" --- OPEN/JUMPTO FILE ----
+function OpenFile(filename) 
+    try
+        execute 'tab sbuffer ' . a:filename
+        ":tab sbuffer ~/_vimrc
+    catch /E94:/
+        execute 'tabe ' . a:filename
+        ":tabe ~/_vimrc
+    endtry
+endfunction
+
+" --- MY MAPPINGS ---
+nnoremap  <C-K>   <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
+inoremap  <C-K>   <ESC>:wa<RETURN><ESC>:AsyncRun -program=make<RETURN> 
+nnoremap  <C-N>   <ESC>:call NextQuickFixError()<RETURN>
+nnoremap  <C-B>   <ESC>:call PrevQuickFixError()<RETURN>
+noremap   <C-S>   <ESC><ESC>:Rg<RETURN>
+nnoremap  <C-J>   <ESC><ESC>:wa<RETURN>
+inoremap  <C-J>   <ESC><ESC>:wa<RETURN>
+
+nnoremap  <C-w>v  <ESC>:vsplit<RETURN>
+nnoremap  <C-w>b  <ESC>:split<RETURN>
+nnoremap  <C-h>   <ESC>:set paste!<RETURN>
+
+nnoremap  <F2>    <ESC>:w<RETURN><ESC>:source $HOME/_vimrc<RETURN>
+noremap   <F3>    <ESC>:call OpenFile('~/_vimrc')<CR>
+nnoremap  <F4>    <ESC>:call OpenFile('~/vimfiles/colors/custom.vim')<CR>
+nnoremap  <F6>    <ESC>:call OpenFile('~/vimfiles/syntax/c.vim')<CR>
+
+nnoremap  <F8>    <ESC>:w<RETURN><ESC>:call DisplayTags()<RETURN>
+nnoremap  <F9>    <ESC>:w<RETURN><ESC>:call DisplayGivenTag()<RETURN>
+nnoremap  <F10>   <ESC>:w<RETURN><ESC>:call RebuildTags()<RETURN>
+"nnoremap  <F5>   <ESC>:update<RETURN><ESC>:cw<RETURN><ESC>:cn<RETURN>
+"nnoremap  <F5>   <ESC>:wa<RETURN><ESC>:AsyncRun -mode=term -pos=external -focus=0 -silent ..\misc\build.bat<RETURN><CR>
 
 " --- ASYNC COMMANDS ---
 command! -nargs=1 Git   AsyncRun -mode=term -pos=right -focus=1 git <args>
@@ -180,7 +207,8 @@ command! -nargs=1 Build AsyncRun -mode=term -pos=hide  -focus=0 build.bat<RETURN
 command -nargs=* Run AsyncRun <args>
 
 " --- LOAD VIM SESSION ---
-function! LoadSession()
+set sessionoptions=tabpages,curdir,winpos,winsize,unix
+function LoadSession() abort
     silent! :source ../session.vim
 endfunction
 if !v:vim_did_enter " only on vim enter do I load the session
