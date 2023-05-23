@@ -1,5 +1,11 @@
 " --- WISH LIST ---
-"  - Jump to definition
+"  - Jump to definition ctrl + [] to jump to and from
+"  - save session vim_did_close
+"  - always center quickfix window highlighted line
+"  - try and just have the normal quickfix output, custom output and see if that is enough
+"  - I have to souce my vimrc for it to work on statusline? maybe its session maybe its something else
+"  - syntax highlighting for types
+"  - ctrlp open buffer should jump to existing open buffer
 "----------------------------------------------------------------------------------------------------
 
 "set nocompatible              "be iMproved, required
@@ -21,6 +27,7 @@ Plugin 'haya14busa/incsearch.vim' " makes / ? g/ searching better by highlightin
 Plugin 'webastien/vim-ctags'      " jump to definition (not working)
 Plugin 'junegunn/fzf'             " just used for ripgrep. Idk if I want this, seems annoying
 Plugin 'junegunn/fzf.vim'         " just used for ripgrep. Idk if I want this, seems annoying
+Plugin 'sharkdp/bat'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
@@ -38,6 +45,7 @@ set guioptions+=a  "gvim copy to system clipboard, on select
 set guioptions+=d  "try and use dark theme
 
 " --- TEXT SETTINGS ---
+set scrolloff=5
 set belloff=all
 set ai     " automatic indent
 set si     " smart indent
@@ -47,26 +55,27 @@ set ss=4
 set sw=4
 set siso=4
 set expandtab
-set softtabstop=4 " Make the spaces feel like real tabs
+set softtabstop=4 " make the spaces feel like real tabs
 set backspace=indent,eol,start
-set nocompatible
+set nocompatible " make vim more compatible with Vi, or not.
 set autoread " auto read changes to files
 
 " --- GENERAL SETTINGS
 set guifont=consolas:h11
 "set guifont=fixedsys
 colorscheme custom
-set splitright
-set splitbelow
-set ruler
-set nopaste
-set nonumber     "enables line numbers
+set splitright " direction to split
+set splitbelow " direction to split
+set ruler      " turn on ruler
+set nopaste    " turn off paste
+set nonumber   " enables line numbers
 set mouse=a    "enable mouse functionality
 set nohlsearch "disable highlighting after search complete
 set wrap linebreak nolist
 set guicursor+=a:blinkon0 "disable blinking cursor
 set foldcolumn=0  "remove all empty spaces on the left
-syntax on      "sytax highlighting on 
+set cinoptions=l1 " fix indentation problems as case:{
+syntax on      " sytax highlighting on 
 
 " --- unkown ---
 "set textwidth=0
@@ -111,10 +120,6 @@ map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
 
-" --- COMMANDS ---
-:command Hex %!xxd
-:command Hexb %!xxd -r
-
 " --- MAPPINGS ---
 nnoremap j gj
 nnoremap k gk
@@ -123,10 +128,8 @@ nnoremap k gk
 function OpenFile(filename) 
     try
         execute 'tab sbuffer ' . a:filename
-        ":tab sbuffer ~/_vimrc
     catch /E94:/
         execute 'tabe ' . a:filename
-        ":tabe ~/_vimrc
     endtry
 endfunction
 
@@ -137,18 +140,22 @@ let g:asyncrun_save = 1
 let g:asyncrun_auto = "make"
 let g:asyncrun_status = ""
 
-" --- FZF RG SETTINGS ---
+" --- FZF RG SETTINGS --- why so trash when it comes to preview colors
+let g:fzf_commits_log_options = '--color=always'
+"
+" --- C TAGS ---
 
 " --- QUICKFIX SETTINGS ---
 set switchbuf=usetab,newtab " quick fix jump to existing tab or open new tab for file
 set errorformat=\ %#%f(%l\\\,%c):\ %m " quick fix error format for clang/msvc (hopefully)
 set makeprg=..\misc\build.bat " set default make for quickfix to be my build.bat
 function! NextQuickFixError() abort
+    set laststatus=0
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
-        set laststatus=0
         copen
+        resize 10
         try
             :cnext
         catch
@@ -161,11 +168,12 @@ function! NextQuickFixError() abort
 endfunction
 
 function! PrevQuickFixError() abort
+    set laststatus=0
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
-        set laststatus=0
         copen
+        resize 10
         try
             :cprev
         catch
@@ -177,12 +185,17 @@ function! PrevQuickFixError() abort
     endif
 endfunction
 
-" --- STATUS BAR LINE
-function OponQuickFixIfErrors()
+" --- STATUS BAR LINE ---
+function OpenQuickFixIfErrorsElseClose()
+    set statusline=%{getqflist()[-1]['text']}%=%-14.(%l,%c%V%)\ %P
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
         copen
+        resize 10
+        wincmd p " keep curser in prev window, not quickfix
+    else
+        cclose
     endif
 endfunction
 
@@ -190,12 +203,13 @@ function ExecMake()
     set laststatus=2
     cclose
     let g:asyncrun_open = 0
-    AsyncRun -program=make " Async runs my build.bat asynchronously, doesn't lock me out
-    autocmd User AsyncRunStop call OponQuickFixIfErrors() " opens quickfix window if there are errors after Async completes
+    AsyncRun -program=make
+    set statusline=%{getqflist()[-1]['text']}%=%-14.(%l,%c%V%)\ %P
+    autocmd User AsyncRunStop call OpenQuickFixIfErrorsElseClose()
 endfunction
-set statusline=%{getqflist()[-1]['text']} " outputs getqflist last item text to statusline
+set statusline=%{getqflist()[-1]['text']}%=%-14.(%l,%c%V%)\ %P
 
-" --- MY MAPPINGS ---
+" --- MAPPINGS ---
 nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
 inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
 nnoremap  <C-N>   <ESC>:call NextQuickFixError()<RETURN>
@@ -217,16 +231,19 @@ nnoremap  <F6>    <ESC>:call OpenFile('~/vimfiles/syntax/c.vim')<CR>
 nnoremap  <F8>    <ESC>:w<RETURN><ESC>:call DisplayTags()<RETURN>
 nnoremap  <F9>    <ESC>:w<RETURN><ESC>:call DisplayGivenTag()<RETURN>
 nnoremap  <F10>   <ESC>:w<RETURN><ESC>:call RebuildTags()<RETURN>
-"nnoremap  <F5>   <ESC>:update<RETURN><ESC>:cw<RETURN><ESC>:cn<RETURN>
-"nnoremap  <F5>   <ESC>:wa<RETURN><ESC>:AsyncRun -mode=term -pos=external -focus=0 -silent ..\misc\build.bat<RETURN><CR>
+
+" --- COMMANDS ---
+:command Hex %!xxd
+:command Hexb %!xxd -r
 
 " --- ASYNC COMMANDS ---
 command! -nargs=1 Git   AsyncRun -mode=term -pos=right -focus=1 git <args>
 command! -nargs=1 Touch AsyncRun -mode=term -pos=hide  -focus=0 type nul > <args>
 command! -nargs=1 Rm    AsyncRun -mode=term -pos=hide  -focus=0 del <args>
 command! -nargs=1 Mv    AsyncRun -mode=term -pos=hide  -focus=0 move <args>
+command! -nargs=1 Start AsyncRun -mode=term -pos=hide  -focus=0 start <args>
 command! -nargs=1 Build AsyncRun -mode=term -pos=hide  -focus=0 build.bat<RETURN><CR>
-command -nargs=* Run AsyncRun <args>
+command  -nargs=* Run AsyncRun <args>
 
 " --- LOAD VIM SESSION ---
 set sessionoptions=tabpages,curdir,winpos,winsize,unix " only save tab and window info

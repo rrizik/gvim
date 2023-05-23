@@ -29,7 +29,7 @@ syn keyword	cRepeat		while for do
 
 syn keyword cTodo		contained TODO FIXME XXX WRONG todo fixme xxx wrong
 syn keyword cRed		contained TODO FIXME XXX WRONG todo fixme xxx wrong
-syn keyword cYellow		contained CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED NOCHECKIN cleanup incomplete study question future consider unclear untested nocheckin
+syn keyword cYellow		contained CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED NOCHECKIN cleanup incomplete study question future consider unclear untested nocheckin YUCK
 syn keyword cGreen		contained NOTE IMPORTANT note important
 
 " It's easy to accidentally add a space after a backslash that was intended
