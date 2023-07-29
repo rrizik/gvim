@@ -28,7 +28,6 @@ Plugin 'haya14busa/incsearch.vim' " makes / ? g/ searching better by highlightin
 Plugin 'webastien/vim-ctags'      " jump to definition (not working)
 Plugin 'junegunn/fzf'             " just used for ripgrep. Idk if I want this, seems annoying
 Plugin 'junegunn/fzf.vim'         " just used for ripgrep. Idk if I want this, seems annoying
-Plugin 'sharkdp/bat'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
