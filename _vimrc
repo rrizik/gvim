@@ -6,6 +6,7 @@
 "  - I have to souce my vimrc for it to work on statusline? maybe its session maybe its something else
 "  - syntax highlighting for types
 "  - ctrlp open buffer should jump to existing open buffer
+"  - fix random bugs that are happening when I open vim and when I source vimrc
 "----------------------------------------------------------------------------------------------------
 
 "set nocompatible              "be iMproved, required
@@ -35,8 +36,8 @@ filetype plugin indent on    " required
 set guioptions-=M  "remove menu bar
 set guioptions-=m  "remove menu bar
 set guioptions-=T  "remove toolbar
-set guioptions-=r  "remove right scroll bar
-set guioptions-=R  "remove right scroll bar
+set guioptions+=r  "remove right scroll bar
+set guioptions+=R  "remove right scroll bar
 set guioptions-=l  "remove left scroll bar
 set guioptions-=L  "remove left scroll bar
 set guioptions-=b  "remove bottom scroll bar
@@ -45,8 +46,8 @@ set guioptions+=a  "gvim copy to system clipboard, on select
 set guioptions+=d  "try and use dark theme
 
 " --- TEXT SETTINGS ---
-set scrolloff=5
-set belloff=all
+set scrolloff=0
+set belloff=all " thank jebus no ding dings
 set ai     " automatic indent
 set si     " smart indent
 set is     " smart indent
@@ -253,3 +254,7 @@ endfunction
 if !v:vim_did_enter " only on vim enter do I load the session
  call LoadSession()
 endif
+
+" Enable c syntax highlighting for .hlsl files
+au BufRead,BufNewFile *.hlsl set filetype=c
+

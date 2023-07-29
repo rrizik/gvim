@@ -27,8 +27,8 @@ syn keyword	cLabel		case default
 syn keyword	cConditional	if else switch
 syn keyword	cRepeat		while for do
 
-syn keyword cTodo		contained TODO FIXME XXX WRONG todo fixme xxx wrong
-syn keyword cRed		contained TODO FIXME XXX WRONG todo fixme xxx wrong
+syn keyword cTodo		contained TODO FIXME XXX WRONG todo fixme xxx 
+syn keyword cRed		contained TODO FIXME XXX WRONG todo fixme xxx
 syn keyword cYellow		contained CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED NOCHECKIN cleanup incomplete study question future consider unclear untested nocheckin YUCK
 syn keyword cGreen		contained NOTE IMPORTANT note important
 
@@ -502,13 +502,53 @@ hi def link cTodo		Todo
 hi def link cRed		SoftRed
 hi def link cYellow		SoftYellow
 hi def link cGreen		Green
-syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 RGBA wchar global local_static local function func def m2 m3 m4 Arena ScratchArena String8 String16 String32 
+syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 I8 I16 I32 I64 S8 S16 S32 S64 U8 U16 U32 U64 F16 F32 F64 V2S32 V2 V3 V4 RGBA wchar global local_static local function func def m2 m3 m4 Arena ScratchArena String8 String16 String32 
 
 hi def link cBadContinuation	Error
 hi def link cCppOutSkip		cCppOutIf2
 hi def link cCppInElse2		cCppOutIf2
 hi def link cCppOutIf2		cCppOut
 hi def link cCppOut		Comment
+
+" --- CUSTOM HIGHLIGHTING ---
+"syn match    cCustomParen    "(" contains=cParen,cCppParen
+"syn match    cCustomFunc     "\w\+\s*(" contains=cCustomParen
+"syn match    cCustomFunc     "\w\+\s*\w*\s*(" contains=cCustomParen
+"syn match    cCustomFunc     "\<[^=]\s)\w\+\s*(" contains=cCustomParen
+"syn match    cCustomFunc     "\<[^=]\s)\w\+\s*(" contains=cCustomParen
+"syn match    cCustomFunc     "\<[^=]\s>\w\+\s*(" contains=cCustomParen
+                              "\<[^=]\s\)\w\+\s*(
+                              "\<[^=]\s\)\w\+\s*(
+                              "\<[^=]\s\)\\w\+\\s*(
+"syn match    cCustomScope    "::"
+"syn match    cCustomClass    "\w\+\s*::" contains=cCustomScope
+
+"syn match    cCustomParen    "?=(" contains=cParen,cCppParen
+"syn match    cCustomFunc     "\w\+\s*(\@=" contains=cCustomParen
+"syn match    cCustomScope    "::"
+"syn match    cCustomClass    "\w\+\s*::" contains=cCustomScope
+"hi def cCustomFunc  gui=bold guifg=yellowgreen
+"hi def link cCustomClass Function
+
+"hi def link cCustomFunc  Function
+"hi def link cCustomClass Function
+
+"syn match jsFunction "\<\k\+\ze("
+"hi link jsFunction Function
+
+"syn match cCustomParen "(" contains=cParen contains=cCppParen
+"syn match cCustomFunc "\w\+\s*(" contains=cCustomParen
+"hi def link cCustomFunc Function
+
+"syn match cCustomParen "(" contains=cParen contains=cCppParen
+"syn match cCustomFunc "^\s*\(\(static\|inline\)\s\+\)\?\w\+\s\+\*\=\s*\w\+\s*(" contains=cCustomParen
+"hi def link cCustomFunc Function
+
+"syn match cppFuncDef "^\s*\w\+\s\+\zs\w\+\ze\s*(.*)\s*\({\|$\)"
+"hi def link cppFuncDef Function
+
+"syn match cppFuncDef "^\s*\(\w\+\(\s\*\)\?\s\+\)\{1,2\}\zs\w\+\ze\s*(.*)\s*\({\|$\)"
+"hi def link cppFuncDef Function
 
 let b:current_syntax = "c"
 
