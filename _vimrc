@@ -1,12 +1,9 @@
 " --- WISH LIST ---
+"  - FZF colors, why, why do you pain me
 "  - Jump to definition ctrl + [] to jump to and from
-"  - save session vim_did_close
 "  - always center quickfix window highlighted line
-"  - try and just have the normal quickfix output, custom output and see if that is enough
-"  - I have to souce my vimrc for it to work on statusline? maybe its session maybe its something else
+"  - have only 1 quickfix window open at any given time
 "  - syntax highlighting for types
-"  - ctrlp open buffer should jump to existing open buffer
-"  - fix random bugs that are happening when I open vim and when I source vimrc
 "----------------------------------------------------------------------------------------------------
 
 "set nocompatible              "be iMproved, required
@@ -21,10 +18,10 @@ set rtp+=$HOME/vimfiles/colors
 call vundle#begin()
 let g:vundle#bundle_dir='$HOME/vimfiles/bundle/'
 Plugin 'VundleVim/Vundle.vim'     " vim plugin plugin
-Plugin 'ctrlpvim/ctrlp.vim'       " file finder
+Plugin 'ctrlpvim/ctrlp.vim'       " file finder - not using for now, seeing if I like fzf better
 Plugin 'scrooloose/nerdtree'      " file viewer with tab
 Plugin 'skywind3000/asyncrun.vim' " run terminal commands from vim
-Plugin 'haya14busa/incsearch.vim' " makes / ? g/ searching better by highlighting all results
+Plugin 'haya14busa/incsearch.vim' " improved hlsearch, cant backspace while shift T_T
 Plugin 'webastien/vim-ctags'      " jump to definition (not working)
 Plugin 'junegunn/fzf'             " just used for ripgrep. Idk if I want this, seems annoying
 Plugin 'junegunn/fzf.vim'         " just used for ripgrep. Idk if I want this, seems annoying
@@ -47,22 +44,24 @@ set guioptions+=d  "try and use dark theme
 " --- TEXT SETTINGS ---
 set scrolloff=0
 set belloff=all " thank jebus no ding dings
-set ai     " automatic indent
-set si     " smart indent
-set is     " smart indent
-set ts=4   " tab space
+set ai          " automatic indent
+set si          " smart indent
+set is          " smart indent
+set ts=4        " tab space
 set ss=4
 set sw=4
 set siso=4
 set expandtab
 set softtabstop=4 " make the spaces feel like real tabs
 set backspace=indent,eol,start
-set nocompatible " make vim more compatible with Vi, or not.
-set autoread " auto read changes to files
+set nocompatible  " make vim more compatible with Vi, or not.
+set autoread      " auto read changes to files
+set incsearch
+set hlsearch
 
 " --- GENERAL SETTINGS
+set termguicolors " tell vim to use gui colors rather than cterm colors
 set guifont=consolas:h11
-"set guifont=fixedsys
 colorscheme custom
 set splitright " direction to split
 set splitbelow " direction to split
@@ -89,7 +88,6 @@ syntax on      " sytax highlighting on
 " look at this
 " allowes for multiple tabs to open in a folder or w.e
 "set tabpagemax=30
-"set laststatus=2
 "packloadall
 "silent! helptags ALL
 "autocmd GUIEnter * silent! WCenter
@@ -107,6 +105,7 @@ autocmd FileType c,cpp,python autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " --- NERDTREE SETTINGS ---
 :nnoremap <tab> :NERDTreeToggle<CR>
+let g:NERDTreeTabsTabMotion = 1
 let NERDTreeShowHidden=1
 let NERDTreeRespectWildIgnore=1
 let NERDTreeQuitOnOpen=0
@@ -115,14 +114,36 @@ let NERDTreeMinimalMenu=1
 let NERDTreeHighlightCursorline=1
 let NERDTreeAutoCenter=1
 
-" --- INCSEARCH SETTINGS ---
+" --- INCSEARCH ---
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
 
-" --- MAPPINGS ---
-nnoremap j gj
-nnoremap k gk
+" --- ASYNC SETTINGS ---
+let g:asyncrun_open = 0
+let g:asyncrun_stdin = 1
+let g:asyncrun_save = 1
+let g:asyncrun_auto = "make"
+let g:asyncrun_status = ""
+
+" --- C TAGS ---
+
+" --- FZF RG SETTINGS --- why so trash when it comes to preview colors\
+let g:fzf_layout = {'down': '40%'}
+let g:fzf_colors =                                                                         
+    \ { 'fg':      ['fg', 'Normal'],                                                           
+      \ 'bg':      ['bg', 'Comment'],                                                           
+      \ 'hl':      ['fg', 'Comment'],                                                          
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],                             
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],                                       
+      \ 'hl+':     ['fg', 'Statement'],                                                        
+      \ 'info':    ['fg', 'PreProc'],                                                          
+      \ 'border':  ['fg', 'Ignore'],                                                           
+      \ 'prompt':  ['fg', 'Conditional'],                                                      
+      \ 'pointer': ['fg', 'Exception'],                                                        
+      \ 'marker':  ['fg', 'Keyword'],                                                          
+      \ 'spinner': ['fg', 'Label'],                                                            
+      \ 'header':  ['fg', 'Comment'] }
 
 " --- OPEN/JUMPTO FILE ----
 function OpenFile(filename) 
@@ -133,34 +154,23 @@ function OpenFile(filename)
     endtry
 endfunction
 
-" --- ASYNC SETTINGS ---
-let g:asyncrun_open = 0
-let g:asyncrun_stdin = 1
-let g:asyncrun_save = 1
-let g:asyncrun_auto = "make"
-let g:asyncrun_status = ""
-
-" --- FZF RG SETTINGS --- why so trash when it comes to preview colors
-let g:fzf_commits_log_options = '--color=always'
-"
-" --- C TAGS ---
-
 " --- QUICKFIX SETTINGS ---
-set switchbuf=usetab,newtab " quick fix jump to existing tab or open new tab for file
-set errorformat=\ %#%f(%l\\\,%c):\ %m " quick fix error format for clang/msvc (hopefully)
+set switchbuf=useopen,usetab " quick fix jump to existing tab or open new tab for file
+set errorformat=\ %#%f(%l\\\,%c):\ %m " clang-cl error format
+"set errorformat=%f(%l):\ %m " cl error format
 set makeprg=..\misc\build.bat " set default make for quickfix to be my build.bat
 function! NextQuickFixError() abort
-    set laststatus=0
+    "set laststatus=0
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
         copen
         resize 10
         try
-            :cnext
+            cnext
         catch
-            :cfirst
-            :cnext
+            cfirst
+            cnext
         endtry
     else
         :ccl
@@ -168,17 +178,17 @@ function! NextQuickFixError() abort
 endfunction
 
 function! PrevQuickFixError() abort
-    set laststatus=0
+    "set laststatus=0
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
         copen
         resize 10
         try
-            :cprev
+            cprev
         catch
-            :clast
-            :cprev
+            clast
+            cprev
         endtry
     else
         :ccl
@@ -187,7 +197,6 @@ endfunction
 
 " --- STATUS BAR LINE ---
 function OpenQuickFixIfErrorsElseClose()
-    set statusline=%{getqflist()[-1]['text']}%=%-14.(%l,%c%V%)\ %P
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
     let warning_count = len(filter(getqflist(), { k,v -> match(v.text, "warning") != -1 }))
     if error_count != 0 || warning_count != 0
@@ -200,37 +209,74 @@ function OpenQuickFixIfErrorsElseClose()
 endfunction
 
 function ExecMake()
-    set laststatus=2
+    set statusline=%t\ %{getqflist()[-1]['text']}%=%-14.(%l,%c%V%)\ %P
     cclose
     let g:asyncrun_open = 0
     AsyncRun -program=make
-    set statusline=%{getqflist()[-1]['text']}%=%-14.(%l,%c%V%)\ %P
     autocmd User AsyncRunStop call OpenQuickFixIfErrorsElseClose()
 endfunction
-set statusline=%{getqflist()[-1]['text']}%=%-14.(%l,%c%V%)\ %P
+
+" set statusbar
+set laststatus=2
+set statusline=%=%-14.(%l,%c%V%)\ %P
 
 " --- MAPPINGS ---
 nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
 inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
-nnoremap  <C-N>   <ESC>:call NextQuickFixError()<RETURN>
-nnoremap  <C-B>   <ESC>:call PrevQuickFixError()<RETURN>
 
-noremap   <C-S>   <ESC><ESC>:Rg<RETURN>
-nnoremap  <C-J>   <ESC><ESC>:wa<RETURN>
-inoremap  <C-J>   <ESC><ESC>:wa<RETURN>
+nnoremap  <C-N>   <ESC>:call NextQuickFixError()<CR>
+nnoremap  <C-B>   <ESC>:call PrevQuickFixError()<CR>
 
-nnoremap  <C-w>v  <ESC>:vsplit<RETURN>
-nnoremap  <C-w>b  <ESC>:split<RETURN>
-nnoremap  <C-h>   <ESC>:set paste!<RETURN>
+noremap   <C-S>   <ESC>:Rg<CR>
+"noremap   <C-p>   <ESC>:Files<CR>
 
-nnoremap  <F2>    <ESC>:w<RETURN><ESC>:source $HOME/_vimrc<RETURN>
+nnoremap  <C-J>   <ESC>:wa<CR>
+inoremap  <C-J>   <ESC>:wa<CR>
+
+nnoremap  <C-w>v  <ESC>:vsplit<CR>
+nnoremap  <C-w>b  <ESC>:split<CR>
+nnoremap  <C-h>   <ESC>:set paste!<CR>
+
+nnoremap  <F2>    <ESC>:w<CR><ESC>:source $HOME/_vimrc<CR>
 noremap   <F3>    <ESC>:call OpenFile('~/_vimrc')<CR>
 nnoremap  <F4>    <ESC>:call OpenFile('~/vimfiles/colors/custom.vim')<CR>
 nnoremap  <F6>    <ESC>:call OpenFile('~/vimfiles/syntax/c.vim')<CR>
 
-nnoremap  <F8>    <ESC>:w<RETURN><ESC>:call DisplayTags()<RETURN>
-nnoremap  <F9>    <ESC>:w<RETURN><ESC>:call DisplayGivenTag()<RETURN>
-nnoremap  <F10>   <ESC>:w<RETURN><ESC>:call RebuildTags()<RETURN>
+nnoremap  <F8>    <ESC>:w<CR><ESC>:call DisplayTags()<CR>
+nnoremap  <F9>    <ESC>:w<CR><ESC>:call DisplayGivenTag()<CR>
+nnoremap  <F10>   <ESC>:w<CR><ESC>:call RebuildTags()<CR>
+
+" move lines up/down
+nnoremap <C-down> :m .+1<CR>==
+nnoremap <C-up> :m .-2<CR>==
+inoremap <C-down> <Esc>:m .+1<CR>==gi
+inoremap <C-up> <Esc>:m .-2<CR>==gi
+vnoremap <C-down> :m '>+1<CR>gv=gv
+vnoremap <C-up> :m '<-2<CR>gv=gv
+
+" j/k traverse sublines for linewraps
+nnoremap j gj
+nnoremap k gk
+
+" paste ontop of highlighted word
+nnoremap <leader>p "_dP
+
+" search replace the word you are on
+nnoremap <leader>s :%s/<C-r><C-w>//gc<left><Left><Left>
+
+" ctrl+d/u keeps cursor in the middle
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+
+inoremap <C-BS> <C-W>
+
+" keep search results in center of screen
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap * *zz
+nnoremap # #zz
+nnoremap g* g*zz
+nnoremap g# g#zz
 
 " --- COMMANDS ---
 :command Hex %!xxd
@@ -238,11 +284,11 @@ nnoremap  <F10>   <ESC>:w<RETURN><ESC>:call RebuildTags()<RETURN>
 
 " --- ASYNC COMMANDS ---
 command! -nargs=1 Git   AsyncRun -mode=term -pos=right -focus=1 git <args>
-command! -nargs=1 Touch AsyncRun -mode=term -pos=hide  -focus=0 type nul > <args>
+command! -nargs=1 Touch AsyncRun -mode=term -pos=hide  -focus=0 touch <args>
 command! -nargs=1 Rm    AsyncRun -mode=term -pos=hide  -focus=0 del <args>
 command! -nargs=1 Mv    AsyncRun -mode=term -pos=hide  -focus=0 move <args>
 command! -nargs=1 Start AsyncRun -mode=term -pos=hide  -focus=0 start <args>
-command! -nargs=1 Build AsyncRun -mode=term -pos=hide  -focus=0 build.bat<RETURN><CR>
+command! -nargs=1 Build AsyncRun -mode=term -pos=hide  -focus=0 build.bat<CR><CR>
 command  -nargs=* Run AsyncRun <args>
 
 " --- LOAD VIM SESSION ---

@@ -510,45 +510,6 @@ hi def link cCppInElse2		cCppOutIf2
 hi def link cCppOutIf2		cCppOut
 hi def link cCppOut		Comment
 
-" --- CUSTOM HIGHLIGHTING ---
-"syn match    cCustomParen    "(" contains=cParen,cCppParen
-"syn match    cCustomFunc     "\w\+\s*(" contains=cCustomParen
-"syn match    cCustomFunc     "\w\+\s*\w*\s*(" contains=cCustomParen
-"syn match    cCustomFunc     "\<[^=]\s)\w\+\s*(" contains=cCustomParen
-"syn match    cCustomFunc     "\<[^=]\s)\w\+\s*(" contains=cCustomParen
-"syn match    cCustomFunc     "\<[^=]\s>\w\+\s*(" contains=cCustomParen
-                              "\<[^=]\s\)\w\+\s*(
-                              "\<[^=]\s\)\w\+\s*(
-                              "\<[^=]\s\)\\w\+\\s*(
-"syn match    cCustomScope    "::"
-"syn match    cCustomClass    "\w\+\s*::" contains=cCustomScope
-
-"syn match    cCustomParen    "?=(" contains=cParen,cCppParen
-"syn match    cCustomFunc     "\w\+\s*(\@=" contains=cCustomParen
-"syn match    cCustomScope    "::"
-"syn match    cCustomClass    "\w\+\s*::" contains=cCustomScope
-"hi def cCustomFunc  gui=bold guifg=yellowgreen
-"hi def link cCustomClass Function
-
-"hi def link cCustomFunc  Function
-"hi def link cCustomClass Function
-
-"syn match jsFunction "\<\k\+\ze("
-"hi link jsFunction Function
-
-"syn match cCustomParen "(" contains=cParen contains=cCppParen
-"syn match cCustomFunc "\w\+\s*(" contains=cCustomParen
-"hi def link cCustomFunc Function
-
-"syn match cCustomParen "(" contains=cParen contains=cCppParen
-"syn match cCustomFunc "^\s*\(\(static\|inline\)\s\+\)\?\w\+\s\+\*\=\s*\w\+\s*(" contains=cCustomParen
-"hi def link cCustomFunc Function
-
-"syn match cppFuncDef "^\s*\w\+\s\+\zs\w\+\ze\s*(.*)\s*\({\|$\)"
-"hi def link cppFuncDef Function
-
-"syn match cppFuncDef "^\s*\(\w\+\(\s\*\)\?\s\+\)\{1,2\}\zs\w\+\ze\s*(.*)\s*\({\|$\)"
-"hi def link cppFuncDef Function
 
 let b:current_syntax = "c"
 
