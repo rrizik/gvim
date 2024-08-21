@@ -24,7 +24,9 @@ hi Title                ctermfg=180  ctermbg=234 cterm=bold     guifg=#d7af87 gu
 
 "bottom status bar
 hi StatusLine			ctermfg=180  ctermbg=238 cterm=none     guifg=#d7af87 guibg=#444444	gui=none
-hi StatusLineNC			ctermfg=188  ctermbg=234 cterm=none     guifg=#949494 guibg=#1c1c1c	gui=none
+"hi StatusLineNC			ctermfg=188  ctermbg=234 cterm=none     guifg=#949494 guibg=#1c1c1c	gui=none
+"hi StatusLineNC			ctermfg=188  ctermbg=234 cterm=none     guifg=#1c1c1c guibg=#1c1c1c	gui=none
+hi StatusLineNC			ctermfg=188  ctermbg=234 cterm=none     guifg=#d7af87 guibg=#444444	gui=none
 
 " side line numbers
 hi LineNr               ctermfg=180  ctermbg=0   cterm=none     guifg=#d7af87 guibg=#000000 gui=none
@@ -61,10 +63,11 @@ hi String               ctermfg=65   ctermbg=none  cterm=none    guifg=#90a461  
 hi Comment              ctermfg=188  ctermbg=none  cterm=none    guifg=#949494   gui=none
 
 hi Red                  ctermfg=124  ctermbg=234  cterm=underline,bold    guifg=#af0000 guibg=#1c1c1c gui=underline,bold
-hi SoftRed              ctermfg=131  ctermbg=234  cterm=underline,bold    guifg=#bf3c3c guibg=#1c1c1c gui=underline,bold
 hi Yellow               ctermfg=184  ctermbg=234  cterm=underline,bold    guifg=#d7d700 guibg=#1c1c1c gui=underline,bold
-hi SoftYellow           ctermfg=100  ctermbg=234  cterm=underline,bold    guifg=#c2be53 guibg=#1c1c1c gui=underline,bold
 hi Green                ctermfg=65   ctermbg=234  cterm=underline,bold    guifg=#87af5f guibg=#1c1c1c gui=underline,bold
+hi SoftRed              ctermfg=131  ctermbg=234  cterm=underline,bold    guifg=#bf3c3c guibg=#1c1c1c gui=underline,bold
+hi SoftYellow           ctermfg=100  ctermbg=234  cterm=underline,bold    guifg=#c2be53 guibg=#1c1c1c gui=underline,bold
+hi SoftGreen            ctermfg=65   ctermbg=234  cterm=underline,bold    guifg=#87af5f guibg=#1c1c1c gui=underline,bold
 
 
 

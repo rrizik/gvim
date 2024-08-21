@@ -25,6 +25,7 @@ Plugin 'haya14busa/incsearch.vim' " improved hlsearch, cant backspace while shif
 Plugin 'webastien/vim-ctags'      " jump to definition (not working)
 Plugin 'junegunn/fzf'             " just used for ripgrep. Idk if I want this, seems annoying
 Plugin 'junegunn/fzf.vim'         " just used for ripgrep. Idk if I want this, seems annoying
+Plugin 'jansedivy/jai.vim'        " jai syntax highlighting
 call vundle#end()            " required
 filetype plugin indent on    " required
 
@@ -75,30 +76,6 @@ set guicursor+=a:blinkon0 "disable blinking cursor
 set foldcolumn=0  "remove all empty spaces on the left
 set cinoptions=l1 " fix indentation problems as case:{
 syntax on      " sytax highlighting on 
-
-" --- unkown ---
-"set textwidth=0
-"set wrapmargin=0
-"set guioptions-=t
-"set ghr=0
-"set term=xterm
-"set guiheadroom=0
-"set guioptions-=e
-
-" look at this
-" allowes for multiple tabs to open in a folder or w.e
-"set tabpagemax=30
-"packloadall
-"silent! helptags ALL
-"autocmd GUIEnter * silent! WCenter
-"autocmd GUIEnter * silent! WToggleClean
-" fix copy/paste
-"vmap <F4> "+y<ESC><ESC>"+pa
-"imap <C-v> <ESC>"+pa
-" --- autosave config ---
-"let auto_save = 0
-"let auto_save_silent = 0
-"inoremap <silent> <C-c> <ESC>
 
 " --- Remove trailing whitespace for these file types
 autocmd FileType c,cpp,python autocmd BufWritePre <buffer> %s/\s\+$//e
@@ -155,10 +132,12 @@ function OpenFile(filename)
 endfunction
 
 " --- QUICKFIX SETTINGS ---
-set switchbuf=useopen,usetab " quick fix jump to existing tab or open new tab for file
-set errorformat=\ %#%f(%l\\\,%c):\ %m " clang-cl error format
-"set errorformat=%f(%l):\ %m " cl error format
 set makeprg=..\misc\build.bat " set default make for quickfix to be my build.bat
+set switchbuf=newtab,usetab " quick fix jump to existing tab or open new tab for file
+"set errorformat=\ %#%f(%l\\\,%c):\ %m " clang-cl error format
+set errorformat=%f(%l):\ %m,
+               \%f(%l)\ :\ %m
+
 function! NextQuickFixError() abort
     "set laststatus=0
     let error_count = len(filter(getqflist(), { k,v -> match(v.text, "error") != -1 }))
@@ -203,13 +182,19 @@ function OpenQuickFixIfErrorsElseClose()
         copen
         resize 10
         wincmd p " keep curser in prev window, not quickfix
+        highlight StatusLine guifg=#d7af87 guibg=#444444
+        "highlight StatusLineNC guifg=#1c1c1c guibg=#bf3c3c gui=bold
+        highlight StatusLineNC guifg=#d7af87 guibg=#444444 gui=none
     else
+        highlight StatusLine guifg=#d7af87 guibg=#444444
+        "highlight StatusLineNC guifg=#1c1c1c guibg=#1c1c1c
+        highlight StatusLineNC guifg=#d7af87 guibg=#444444 gui=none
         cclose
     endif
 endfunction
 
 function ExecMake()
-    set statusline=%t\ %{getqflist()[-1]['text']}%=%-14.(%l,%c%V%)\ %P
+    set statusline=%f\ %{getqflist()[-1]['text']}%=%-14.(%l,%c%)\ %p%%
     cclose
     let g:asyncrun_open = 0
     AsyncRun -program=make
@@ -218,11 +203,14 @@ endfunction
 
 " set statusbar
 set laststatus=2
-set statusline=%=%-14.(%l,%c%V%)\ %P
+set statusline=%f\ %=%-14.(%l,%c%)\ %p%%
 
 " --- MAPPINGS ---
 nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
 inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
+
+"nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
+"inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
 
 nnoremap  <C-N>   <ESC>:call NextQuickFixError()<CR>
 nnoremap  <C-B>   <ESC>:call PrevQuickFixError()<CR>
@@ -232,6 +220,8 @@ noremap   <C-S>   <ESC>:Rg<CR>
 
 nnoremap  <C-J>   <ESC>:wa<CR>
 inoremap  <C-J>   <ESC>:wa<CR>
+
+inoremap  <C-C>   <ESC>
 
 nnoremap  <C-w>v  <ESC>:vsplit<CR>
 nnoremap  <C-w>b  <ESC>:split<CR>

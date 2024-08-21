@@ -29,7 +29,7 @@ syn keyword	cRepeat		while for do
 
 syn keyword cTodo		contained TODO FIXME XXX WRONG todo fixme xxx 
 syn keyword cRed		contained TODO FIXME XXX WRONG todo fixme xxx
-syn keyword cYellow		contained CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED NOCHECKIN cleanup incomplete study question future consider unclear untested nocheckin YUCK
+syn keyword cYellow		contained CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED NOCHECKIN YUCK WARNING cleanup incomplete study question future consider unclear untested nocheckin yuck warning
 syn keyword cGreen		contained NOTE IMPORTANT note important
 
 " It's easy to accidentally add a space after a backslash that was intended
@@ -501,8 +501,8 @@ hi def link cSpecial		SpecialChar
 hi def link cTodo		Todo
 hi def link cRed		SoftRed
 hi def link cYellow		SoftYellow
-hi def link cGreen		Green
-syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 I8 I16 I32 I64 S8 S16 S32 S64 U8 U16 U32 U64 F16 F32 F64 V2S32 V2 V3 V4 RGBA wchar global local_static local function func def m2 m3 m4 Arena ScratchArena String8 String16 String32 
+hi def link cGreen		SoftGreen
+syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 I8 I16 I32 I64 S8 S16 S32 S64 U8 U16 U32 U64 F16 F32 F64 V2S32 V2 V3 V4 RGBA wchar global local_static local function def m2 m3 m4 Arena ScratchArena PoolArena PoolFreeNode String8 String16 String32 
 
 hi def link cBadContinuation	Error
 hi def link cCppOutSkip		cCppOutIf2
