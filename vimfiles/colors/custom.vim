@@ -62,7 +62,9 @@ hi Special              ctermfg=65   ctermbg=none  cterm=none    guifg=#90a461  
 hi String               ctermfg=65   ctermbg=none  cterm=none    guifg=#90a461   gui=none
 hi Comment              ctermfg=188  ctermbg=none  cterm=none    guifg=#949494   gui=none
 
-hi Red                  ctermfg=124  ctermbg=234  cterm=underline,bold    guifg=#af0000 guibg=#1c1c1c gui=underline,bold
+hi Red                  ctermfg=124  ctermbg=234  cterm=underline,bold    guifg=#df4141 guibg=#1c1c1c gui=underline,bold
+hi SoftRed              ctermfg=124  ctermbg=234  cterm=underline,bold    guifg=#df4141 guibg=#1c1c1c gui=underline,bold
+hi Todo                 ctermfg=124  ctermbg=234  cterm=underline,bold    guifg=#df4141 guibg=#1c1c1c gui=underline,bold
 hi Yellow               ctermfg=184  ctermbg=234  cterm=underline,bold    guifg=#d7d700 guibg=#1c1c1c gui=underline,bold
 hi Green                ctermfg=65   ctermbg=234  cterm=underline,bold    guifg=#87af5f guibg=#1c1c1c gui=underline,bold
 hi SoftRed              ctermfg=131  ctermbg=234  cterm=underline,bold    guifg=#bf3c3c guibg=#1c1c1c gui=underline,bold

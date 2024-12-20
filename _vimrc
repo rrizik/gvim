@@ -4,6 +4,8 @@
 "  - always center quickfix window highlighted line
 "  - have only 1 quickfix window open at any given time
 "  - syntax highlighting for types
+"  - column for visualization of breakpoints
+"  - ctags fix them FUCK
 "----------------------------------------------------------------------------------------------------
 
 "set nocompatible              "be iMproved, required
@@ -103,7 +105,16 @@ let g:asyncrun_save = 1
 let g:asyncrun_auto = "make"
 let g:asyncrun_status = ""
 
-" --- C TAGS ---
+" --- CTAGS ---
+"let g:vim_ctags_auto_generate = 1
+"let g:tags="C:\sh1tz\apesticks\cc++\flux\tags"
+"let g:tagbar_ctags_bin = "C:/ProgramData/chocolatey/bin/ctags.exe"
+let g:tagbar_ctags_bin = "C:/ProgramData/chocolatey/lib/universal-ctags/tools/ctags.exe"
+"let g:ctags_languages = "c++,c,python"
+let g:vim_ctags__jump_behaviors = { 'before': 'tabnew', 'after': 'norm zvzz' }
+
+
+"set tags=./tags
 
 " --- FZF RG SETTINGS --- why so trash when it comes to preview colors\
 let g:fzf_layout = {'down': '40%'}
@@ -209,17 +220,13 @@ set statusline=%f\ %=%-14.(%l,%c%)\ %p%%
 nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
 inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
 
-"nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
-"inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
-
 nnoremap  <C-N>   <ESC>:call NextQuickFixError()<CR>
 nnoremap  <C-B>   <ESC>:call PrevQuickFixError()<CR>
 
 noremap   <C-S>   <ESC>:Rg<CR>
-"noremap   <C-p>   <ESC>:Files<CR>
 
-nnoremap  <C-J>   <ESC>:wa<CR>
-inoremap  <C-J>   <ESC>:wa<CR>
+nnoremap  <C-J>   <ESC>:wa<CR><ESC>:silent call RebuildTags()<CR>
+inoremap  <C-J>   <ESC>:wa<CR><ESC>:silent call RebuildTags()<CR>
 
 inoremap  <C-C>   <ESC>
 
@@ -232,17 +239,24 @@ noremap   <F3>    <ESC>:call OpenFile('~/_vimrc')<CR>
 nnoremap  <F4>    <ESC>:call OpenFile('~/vimfiles/colors/custom.vim')<CR>
 nnoremap  <F6>    <ESC>:call OpenFile('~/vimfiles/syntax/c.vim')<CR>
 
-nnoremap  <F8>    <ESC>:w<CR><ESC>:call DisplayTags()<CR>
-nnoremap  <F9>    <ESC>:w<CR><ESC>:call DisplayGivenTag()<CR>
-nnoremap  <F10>   <ESC>:w<CR><ESC>:call RebuildTags()<CR>
+nnoremap  <F5>    <ESC>:AsyncRun C:\sh1tz\programs\remedybg\remedybg.exe start-debugging<CR>
+nnoremap  <S-F5>    <ESC>:AsyncRun C:\sh1tz\programs\remedybg\remedybg.exe stop-debugging<CR>
+
+nnoremap  <C-[>   <C-T>
+"nnoremap  <C-'>   <ESC>:tn<CR>
+"nnoremap  <C-;>   <ESC>:tp<CR>
+
+"nnoremap  <F8>    <ESC>:w<CR><ESC>:call DisplayTag()<CR>
+"nnoremap  <F9>    <ESC>:w<CR><ESC>:call DisplayGivenTag()<CR>
+"nnoremap  <F10>   <ESC>:w<CR><ESC>:call RebuildTags()<CR>
 
 " move lines up/down
 nnoremap <C-down> :m .+1<CR>==
-nnoremap <C-up> :m .-2<CR>==
+nnoremap <C-up>   :m .-2<CR>==
 inoremap <C-down> <Esc>:m .+1<CR>==gi
-inoremap <C-up> <Esc>:m .-2<CR>==gi
+inoremap <C-up>   <Esc>:m .-2<CR>==gi
 vnoremap <C-down> :m '>+1<CR>gv=gv
-vnoremap <C-up> :m '<-2<CR>gv=gv
+vnoremap <C-up>   :m '<-2<CR>gv=gv
 
 " j/k traverse sublines for linewraps
 nnoremap j gj

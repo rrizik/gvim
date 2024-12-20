@@ -27,8 +27,8 @@ syn keyword	cLabel		case default
 syn keyword	cConditional	if else switch
 syn keyword	cRepeat		while for do
 
-syn keyword cTodo		contained TODO FIXME XXX WRONG todo fixme xxx 
-syn keyword cRed		contained TODO FIXME XXX WRONG todo fixme xxx
+syn keyword cTodo		contained TODO FIXME WRONG XXX todo fixme wrong xxx 
+syn keyword cRed		contained TODO FIXME WRONG XXX todo fixme wrong xxx
 syn keyword cYellow		contained CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED NOCHECKIN YUCK WARNING cleanup incomplete study question future consider unclear untested nocheckin yuck warning
 syn keyword cGreen		contained NOTE IMPORTANT note important
 
@@ -502,7 +502,7 @@ hi def link cTodo		Todo
 hi def link cRed		SoftRed
 hi def link cYellow		SoftYellow
 hi def link cGreen		SoftGreen
-syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 I8 I16 I32 I64 S8 S16 S32 S64 U8 U16 U32 U64 F16 F32 F64 V2S32 V2 V3 V4 RGBA wchar global local_static local function def m2 m3 m4 Arena ScratchArena PoolArena PoolFreeNode String8 String16 String32 
+syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 I8 I16 I32 I64 S8 S16 S32 S64 U8 U16 U32 U64 F16 F32 F64 V2S32 V2 V3 V4 RGBA wchar global local_static local function def m2 m3 m4 Arena ScratchArena PoolArena PoolFreeNode String8 String16 String32 String8Node
 
 hi def link cBadContinuation	Error
 hi def link cCppOutSkip		cCppOutIf2
