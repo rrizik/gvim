@@ -28,9 +28,9 @@ syn keyword	cConditional	if else switch
 syn keyword	cRepeat		while for do
 
 syn keyword cTodo		contained TODO FIXME WRONG XXX todo fixme wrong xxx 
-syn keyword cRed		contained TODO FIXME WRONG XXX todo fixme wrong xxx
-syn keyword cYellow		contained CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER UNCLEAR UNTESTED NOCHECKIN YUCK WARNING cleanup incomplete study question future consider unclear untested nocheckin yuck warning
-syn keyword cGreen		contained NOTE IMPORTANT note important
+syn keyword cRed		contained TODO FIXME WRONG XXX Todo FixMe Wrong todo fixme wrong xxx
+syn keyword cYellow		contained SPEED SLOW CLEANUP INCOMPLETE STUDY QUESTION FUTURE CONSIDER NOTCLEAR UNTESTED TESTING NOCHECKIN YUCK WARNING Speed Slow Cleanup Incomplete Study Question Future Consider NotClear Untested Testing NoCheckin Yuck Warning speed slow cleanup incomplete study question future consider notclear untested testing nocheckin yuck warning
+syn keyword cGreen		contained NOTE IMPORTANT Note Important note important
 
 " It's easy to accidentally add a space after a backslash that was intended
 " for line continuation.  Some compilers allow it, which makes it
@@ -502,7 +502,7 @@ hi def link cTodo		Todo
 hi def link cRed		SoftRed
 hi def link cYellow		SoftYellow
 hi def link cGreen		SoftGreen
-syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 I8 I16 I32 I64 S8 S16 S32 S64 U8 U16 U32 U64 F16 F32 F64 V2S32 V2 V3 V4 RGBA wchar global local_static local function def m2 m3 m4 Arena ScratchArena PoolArena PoolFreeNode String8 String16 String32 String8Node
+syn keyword	cType i8 i16 i32 i64 s8 s16 s32 s64 u8 u16 u32 u64 f16 f32 f64 v2s32 v2 v3 v4 vec2 vec3 vec4 I8 I16 I32 I64 S8 S16 S32 S64 U8 U16 U32 U64 F16 F32 F64 V2S32 V2 V3 V4 VEC2 VEC3 VEC4 RGBA wchar global local_static local function def m2 m3 m4 M2 M3 M4 mat1 mat2 mat3 MAT1 MAT2 MAT3 Arena ScratchArena PoolArena PoolFreeNode String8 String16 String32 String8Node String8Join String8List
 
 hi def link cBadContinuation	Error
 hi def link cCppOutSkip		cCppOutIf2

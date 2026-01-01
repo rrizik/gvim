@@ -142,12 +142,25 @@ function OpenFile(filename)
     endtry
 endfunction
 
+function! SetBuildCommand()
+    if filereadable('..\misc\build.bat')
+        set makeprg=..\misc\build.bat
+        set errorformat=%f(%l):\ %m,
+                       \%f(%l)\ :\ %m
+    elseif filereadable('..\scripts\build.bat')
+        set makeprg=..\scripts\build.bat
+        set errorformat=\ %#%f(%l\\\,%c):\ %m " clang-cl error format
+    endif
+endfunction
+
+call SetBuildCommand()
+
 " --- QUICKFIX SETTINGS ---
-set makeprg=..\misc\build.bat " set default make for quickfix to be my build.bat
-set switchbuf=newtab,usetab " quick fix jump to existing tab or open new tab for file
+"set makeprg=..\misc\build.bat " set default make for quickfix to be my build.bat
+set switchbuf=newtab,usetab   " quick fix jump to existing tab or open new tab for file
 "set errorformat=\ %#%f(%l\\\,%c):\ %m " clang-cl error format
-set errorformat=%f(%l):\ %m,
-               \%f(%l)\ :\ %m
+"set errorformat=%f(%l):\ %m,
+               "\%f(%l)\ :\ %m
 
 function! NextQuickFixError() abort
     "set laststatus=0
@@ -216,9 +229,31 @@ endfunction
 set laststatus=2
 set statusline=%f\ %=%-14.(%l,%c%)\ %p%%
 
+function! CompileOnLanguage()
+    " Get the file extension
+    let l:ext = expand('%:e')
+
+    " Save all files
+    wall
+
+    " Check if the file is a Python file
+    if l:ext ==# 'py'
+        " Call your Python-specific command
+        echo "Running Python ExecMake..."
+        ":AsyncRun python main.py
+        !python main.py
+    else
+        " Call your general ExecMake
+        echo "Running generic ExecMake..."
+        call ExecMake()
+    endif
+endfunction
+
 " --- MAPPINGS ---
-nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
-inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
+"nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
+"inoremap  <C-K>   <ESC>:wa<CR><ESC>:call ExecMake()<CR>
+nnoremap  <C-K>   <ESC>:wa<CR><ESC>:call CompileOnLanguage()<CR>
+inoremap  <C-K>   <ESC>:wa<CR><ESC>:call CompileOnLanguage()<CR>
 
 nnoremap  <C-N>   <ESC>:call NextQuickFixError()<CR>
 nnoremap  <C-B>   <ESC>:call PrevQuickFixError()<CR>
@@ -239,8 +274,10 @@ noremap   <F3>    <ESC>:call OpenFile('~/_vimrc')<CR>
 nnoremap  <F4>    <ESC>:call OpenFile('~/vimfiles/colors/custom.vim')<CR>
 nnoremap  <F6>    <ESC>:call OpenFile('~/vimfiles/syntax/c.vim')<CR>
 
-nnoremap  <F5>    <ESC>:AsyncRun C:\sh1tz\programs\remedybg\remedybg.exe start-debugging<CR>
-nnoremap  <S-F5>    <ESC>:AsyncRun C:\sh1tz\programs\remedybg\remedybg.exe stop-debugging<CR>
+"nnoremap  <F5>    <ESC>:AsyncRun C:\sh1tz\programs\remedybg\remedybg.exe start-debugging<CR>
+nnoremap  <F5>    <ESC>:AsyncRun C:\sh1tz\programs\remedybg\remedy_debug.bat<CR>
+nnoremap  <S-F5>  <ESC>:AsyncRun C:\sh1tz\programs\remedybg\remedybg.exe stop-debugging<CR>
+
 
 nnoremap  <C-[>   <C-T>
 "nnoremap  <C-'>   <ESC>:tn<CR>
@@ -258,6 +295,9 @@ inoremap <C-up>   <Esc>:m .-2<CR>==gi
 vnoremap <C-down> :m '>+1<CR>gv=gv
 vnoremap <C-up>   :m '<-2<CR>gv=gv
 
+nnoremap <C-]> :+tabmove<CR>
+nnoremap <C-[> :-tabmove<CR>
+
 " j/k traverse sublines for linewraps
 nnoremap j gj
 nnoremap k gk
@@ -267,6 +307,10 @@ nnoremap <leader>p "_dP
 
 " search replace the word you are on
 nnoremap <leader>s :%s/<C-r><C-w>//gc<left><Left><Left>
+
+" remap ctag buttons
+nnoremap <leader>] <C-]>
+nnoremap <leader>[ <C-t>
 
 " ctrl+d/u keeps cursor in the middle
 nnoremap <C-d> <C-d>zz
