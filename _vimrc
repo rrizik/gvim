@@ -60,12 +60,11 @@ set backspace=indent,eol,start
 set nocompatible  " make vim more compatible with Vi, or not.
 set autoread      " auto read changes to files
 set incsearch
-set hlsearch
 
 " --- GENERAL SETTINGS
+colorscheme custom
 set termguicolors " tell vim to use gui colors rather than cterm colors
 set guifont=consolas:h11
-colorscheme custom
 set splitright " direction to split
 set splitbelow " direction to split
 set ruler      " turn on ruler
